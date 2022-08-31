@@ -1,35 +1,5 @@
 import random
 
-# def in_bounds(num):
-#     if num == 3:
-#         num -= 3
-#     elif num < 3:
-#         num += 1
-#     return num
-
-# def create_deck():
-#     value = ['1','2','3','4','5','6','7','8','9', 'Reverse!', 'Skip!', 'Draw two!']
-#     color = ['Green ','Blue ','Red ','Yellow ']
-#     left_overs = ['Green 0', 'Blue 0', 'Red 0', 'Yellow 0', 'Wild Draw Four!', 'Wild Draw Four!', 'Wild Draw Four!', 'Wild Draw Four!', 'Wild!', 'Wild!', 'Wild!', 'Wild!']
-#     deck = []
-#     index = 0
-#     multiplyer = 12
-
-#     while len(deck) < 96:
-    
-#         for i in value:
-#             card = color[index] + i
-#             deck.append(card)
-#             if len(deck) == multiplyer:
-#                 index = in_bounds(index)
-#                 multiplyer += 12
-#     for i in left_overs:
-#         deck.append(i)
-#         random.shuffle(deck)
-#         random.shuffle(deck)
-#         random.shuffle(deck)
-
-#     return deck
 
 deck = ['Green 0', 'Green 1', 'Green 1', 'Green 2', 'Green 2', 'Green 3', 'Green 3', 'Green 4', 'Green 4', 'Green 5', 'Green 5', 'Green 6', 'Green 6', 'Green 7', 'Green 7', 'Green 8', 'Green 8', 'Green 9', 'Green 9', 'Green Reverse!', 'Green Reverse!', 'Green Skip!', 'Green Skip!', 'Green Draw Two!', 'Green Draw Two!',
 'Blue 0', 'Blue 1', 'Blue 1', 'Blue 2', 'Blue 2', 'Blue 3', 'Blue 3', 'Blue 4', 'Blue 4', 'Blue 5', 'Blue 5', 'Blue 6', 'Blue 6', 'Blue 7', 'Blue 7', 'Blue 8', 'Blue 8', 'Blue 9', 'Blue 9', 'Blue Reverse!', 'Blue Reverse!', 'Blue Skip!', 'Blue Skip!', 'Blue Draw Two!', 'Blue Draw Two!',
@@ -50,39 +20,6 @@ while len(player1_hand) < 7 and len(player2_hand) < 7: #------------------------
     player1_hand.append(card)
     card = deck.pop(0)
     player2_hand.append(card)
-
-
-def action_card(played_card):
-    if played_card.__contains__('Skip'):
-        return "SKIP"
-    elif played_card.__contains__('Reverse'):
-        return 'REVERSE'
-    elif played_card.__contains__('Draw'):
-        return 'DRAW TWO'
-    else:
-        return 'WILD'
-    
-
-        
-
-#     Card      |  Index   |  Value
-#________________________________
-# Red Reverse       4           R
-# Red Skip          4           S
-# Red Draw Two      4           D
-
-# Green Reverse     6           R
-# Green Skip        6           S
-# Green Draw Two    6           D
-
-# Yellow Reverse    7           R
-# Yellow Skip       7           S
-# Yellow Draw Two   7           D
-
-# Blue Reverse      5           R
-# Blue Skip         5           S
-# Blue Draw Two     5           D
-
 
 def action_check(played_card): #-------------------------------------------------------------------------> Evaluates played card to determine whether or not it's an action card
      if played_card[-1] != '!':
@@ -130,26 +67,61 @@ player2 = input("Player 2, enter your name: \n")
 player1_turn_complete = False
 player2_turn_complete = True
 
+def action_card(played_card):
+    global player1_turn_complete
+    global player2_turn_complete
+    
+    if played_card.__contains__('Draw Two'):
+        if player2_turn_complete == True and player1_turn_complete == False:
+            card = deck.pop(0)
+            player1_hand.append(card)
+            card = deck.pop(0)
+            player1_hand.append(card)
+        elif player1_turn_complete == True and player2_turn_complete == False:
+            card = deck.pop(0)
+            player2_hand.append(card)
+            card = deck.pop(0)
+            player2_hand.append(card)
+
+
+def action_check(played_card): #-------------------------------------------------------------------------> Evaluates played card to determine whether or not it's an action card
+     if played_card[-1] != '!':
+         return
+     else:
+         return action_card(played_card)
+
+
 while game_on == True: # --------------------------------------------------------------------------------------> Game Starts here 
     
     if player2_turn_complete == True:
     
         top_card = discard_pile[0]
+        action_card(top_card)#--------------------------------------------------> Handles draw two Cards Only
+        ###################
         print('___________________________________________________________________________________')
         print(f'{player1.title()}:')
         print(f"The top card is: {top_card}")
         print(player1_hand)
         move = input("Choose a card by it's index: ") # --------------------------------------------------------> Player 1's Turn
         print(f'You selected {player1_hand[int(move)]}')#---------------------------------------------------------------------->       Test
-
-        # Put function here to pass 'move' to to evaluate for action cards #
+        # Evaluate played card to check for wilds and wild draw fours here
+        
 
 
         if check_play(top_card, player1_hand[int(move)]) == True: # ------------------------------------(If this card is playable)
             card = player1_hand.pop(int(move))
             discard_pile.insert(0, card)
-            player1_turn_complete = True
-            player2_turn_complete = False
+            if discard_pile[0].__contains__('Skip'):
+                if player2_turn_complete == True and player1_turn_complete == False:
+                    player1_turn_complete = True
+                    player2_turn_complete = False
+                elif player2_turn_complete == False and player1_turn_complete == True:
+                    player1_turn_complete = False
+                    player2_turn_complete = True
+            else:
+                player1_turn_complete = True
+                player2_turn_complete = False
+            
 
         else:
             print(' ')
@@ -163,21 +135,33 @@ while game_on == True: # -------------------------------------------------------
     if player1_turn_complete == True:
 
         top_card = discard_pile[0] #---------------------------------------------------------------------------------> Player 2's Turn
+        action_card(top_card)
+        ##########
         print('___________________________________________________________________________________')
         print(f'{player2.title()}:')
         print(f"The top card is: {top_card}")
         print(player2_hand)
         move = input(f"{player2.title()}, choose a card by it's index: ")
         print(f'You selected {player2_hand[int(move)]}')#---------------------------------------------------------------------->       Test
-
+        print(f'Player 1 turn complete: {player1_turn_complete}')
+        print(f'Player 2 turn complete: {player2_turn_complete}')
+        
+        # Evaluate played card to check for wilds and wild draw fours here
         if check_play(top_card, player2_hand[int(move)]) == True:
             card = player2_hand.pop(int(move))
             discard_pile.insert(0, card)
-            player2_turn_complete = True
-            player1_turn_complete = False
+            if discard_pile[0].__contains__('Skip'):
+                if player2_turn_complete == True and player1_turn_complete == False:
+                    player1_turn_complete = True
+                    player2_turn_complete = False
+                elif player2_turn_complete == False and player1_turn_complete == True:
+                    player1_turn_complete = False
+                    player2_turn_complete = True
         else:
-            print(' ')
-            print('^^^^^^^^^^^^^^^^^^^^^^^^^^')
-            print('Invalid move, pick again.')
-            print('^^^^^^^^^^^^^^^^^^^^^^^^^^')
+            player1_turn_complete = True
             player2_turn_complete = False
+        print(' ')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        print('Invalid move, pick again.')
+        print('^^^^^^^^^^^^^^^^^^^^^^^^^^')
+        player2_turn_complete = False
