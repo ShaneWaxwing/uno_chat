@@ -37,7 +37,7 @@ deck = ['Green 0', 'Green 1', 'Green 1', 'Green 2', 'Green 2', 'Green 3', 'Green
 'Red 0', 'Red 1', 'Red 1', 'Red 2', 'Red 2', 'Red 3', 'Red 3', 'Red 4', 'Red 4', 'Red 5', 'Red 5', 'Red 6', 'Red 6', 'Red 7', 'Red 7', 'Red 8', 'Red 8', 'Red 9', 'Red 9', 'Red Reverse!', 'Red Reverse!', 'Red Skip!', 'Red Skip!', 'Red Draw Two!', 'Red Draw Two!',
 'Wild!', 'Wild!', 'Wild!', 'Wild!', 'Wild Draw Four!', 'Wild Draw Four!', 'Wild Draw Four!', 'Wild Draw Four!']
 random.shuffle(deck)
-
+random.shuffle(deck)
 
 
 player2_hand = []
@@ -53,15 +53,16 @@ while len(player1_hand) < 7 and len(player2_hand) < 7: #------------------------
 
 
 def action_card(played_card):
-    # --- Red --- #
-    if played_card[4] == 'R':
-        return 'SKIP'
-    elif played_card[4] == 'S':
+    if played_card.__contains__('Skip'):
+        return "SKIP"
+    elif played_card.__contains__('Reverse'):
         return 'REVERSE'
-    elif played_card[4] == 'D':
-        return 'DRAW 2'
-    # --- Blue --- #
-    elif played_card[5] == 'R':
+    elif played_card.__contains__('Draw'):
+        return 'DRAW TWO'
+    else:
+        return 'WILD'
+    
+
         
 
 #     Card      |  Index   |  Value
@@ -84,10 +85,10 @@ def action_card(played_card):
 
 
 def action_check(played_card): #-------------------------------------------------------------------------> Evaluates played card to determine whether or not it's an action card
-    if played_card[-1] != '!':
-        return
-    else:
-        return action_card(played_card)
+     if played_card[-1] != '!':
+         return
+     else:
+         return action_card(played_card)
         
 
 
